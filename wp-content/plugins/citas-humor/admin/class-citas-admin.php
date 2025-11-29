@@ -31,12 +31,35 @@ class Citas_Humor_Admin {
      * Registrar configuraciones
      */
     public function register_settings() {
-        register_setting('citas_humor_settings', 'citas_humor_theme');
+        register_setting('citas_humor_settings', 'citas_humor_theme', array(
+            'type' => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+            'default' => 'gradient'
+        ));
+        
+        register_setting('citas_humor_settings', 'citas_humor_source', array(
+            'type' => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+            'default' => 'api'
+        ));
+        
+        register_setting('citas_humor_settings', 'citas_humor_use_cache', array(
+            'type' => 'string',
+            'sanitize_callback' => 'sanitize_text_field',
+            'default' => '1'
+        ));
         
         add_settings_section(
             'citas_humor_main_section',
             'Configuración de Temas',
             array($this, 'render_section_description'),
+            'citas-humor-settings'
+        );
+        
+        add_settings_section(
+            'citas_humor_source_section',
+            'Configuración de Fuente de Datos',
+            array($this, 'render_source_section_description'),
             'citas-humor-settings'
         );
         
@@ -47,6 +70,78 @@ class Citas_Humor_Admin {
             'citas-humor-settings',
             'citas_humor_main_section'
         );
+        
+        add_settings_field(
+            'citas_humor_source_field',
+            'Fuente de Citas',
+            array($this, 'render_source_field'),
+            'citas-humor-settings',
+            'citas_humor_source_section'
+        );
+        
+        add_settings_field(
+            'citas_humor_cache_field',
+            'Usar Cache',
+            array($this, 'render_cache_toggle_field'),
+            'citas-humor-settings',
+            'citas_humor_source_section'
+        );
+    }
+    
+    /**
+     * Descripción de la sección de fuente
+     */
+    public function render_source_section_description() {
+        echo '<p>Configura de dónde obtener las citas humorísticas.</p>';
+    }
+    
+    /**
+     * Renderizar campo de fuente de datos
+     */
+    public function render_source_field() {
+        $current_source = get_option('citas_humor_source', 'api');
+        ?>
+        <select name="citas_humor_source" id="citas_humor_source">
+            <option value="api" <?php selected($current_source, 'api'); ?>>API Externa (JokeAPI)</option>
+            <option value="local" <?php selected($current_source, 'local'); ?>>Citas Locales</option>
+        </select>
+        <p class="description">
+            <strong>API Externa:</strong> Obtiene chistes frescos desde JokeAPI (requiere conexión a internet).<br>
+            <strong>Citas Locales:</strong> Usa las 15 citas predefinidas en el plugin (siempre disponibles).
+        </p>
+        <?php
+    }
+    
+    /**
+     * Renderizar campo de toggle de cache
+     */
+    public function render_cache_toggle_field() {
+        $use_cache = get_option('citas_humor_use_cache', '1');
+        ?>
+        <label>
+            <input type="checkbox" name="citas_humor_use_cache" value="1" <?php checked($use_cache, '1'); ?>>
+            Activar sistema de cache
+        </label>
+        <p class="description">
+            <strong>Activado:</strong> Los chistes se guardan en cache durante 5 minutos, reduciendo llamadas a la API y mejorando el rendimiento.<br>
+            <strong>Desactivado:</strong> Cada visita obtiene un chiste nuevo directamente de la API (mayor variedad pero más lento).<br>
+            <em>Nota: El sistema usa 10 slots de cache rotativos para mantener variedad en los chistes.</em>
+        </p>
+        <?php
+    }
+    
+    /**
+     * Renderizar campo de gestión de cache
+     */
+    public function render_cache_field() {
+        ?>
+        <p class="description">
+            El cache almacena chistes de la API para mejorar el rendimiento.<br>
+            <a href="<?php echo wp_nonce_url(admin_url('options-general.php?page=citas-humor-settings&action=clear_cache'), 'clear_cache', 'cache_nonce'); ?>" class="button button-secondary">
+                Limpiar Cache
+            </a>
+        </p>
+        <?php
     }
     
     /**
@@ -121,6 +216,19 @@ class Citas_Humor_Admin {
             return;
         }
         
+        // Manejar limpieza de cache
+        if (isset($_GET['action']) && $_GET['action'] === 'clear_cache' && isset($_GET['cache_nonce'])) {
+            if (wp_verify_nonce($_GET['cache_nonce'], 'clear_cache')) {
+                Citas_Humor_Data::clear_cache();
+                add_settings_error(
+                    'citas_humor_messages',
+                    'citas_humor_cache_cleared',
+                    'Cache limpiado correctamente',
+                    'updated'
+                );
+            }
+        }
+        
         // Mostrar mensaje si se guardó
         if (isset($_GET['settings-updated'])) {
             add_settings_error(
@@ -151,6 +259,16 @@ class Citas_Humor_Admin {
                 submit_button('Guardar Configuración');
                 ?>
             </form>
+            
+            <div style="background: #fff; padding: 20px; margin: 20px 0; border-left: 4px solid #00a32a;">
+                <h2>Gestión de Cache</h2>
+                <p class="description">
+                    El cache almacena chistes de la API para mejorar el rendimiento.<br><br>
+                    <a href="<?php echo wp_nonce_url(admin_url('options-general.php?page=citas-humor-settings&action=clear_cache'), 'clear_cache', 'cache_nonce'); ?>" class="button button-secondary">
+                        Limpiar Cache
+                    </a>
+                </p>
+            </div>
         </div>
         <?php
     }

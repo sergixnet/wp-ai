@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Citas de Humor
  * Plugin URI: https://wp-ai.dev
- * Description: Muestra citas humorísticas aleatorias mediante el shortcode [cita_humor]
- * Version: 2.0.0
+ * Description: Muestra citas humorísticas aleatorias desde JokeAPI mediante el shortcode [cita_humor] o bloque de Gutenberg
+ * Version: 2.1.0
  * Author: WordPress AI
  * Author URI: https://wp-ai.dev
  * License: GPL v2 or later
@@ -17,7 +17,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Definir constantes del plugin
-define('CITAS_HUMOR_VERSION', '2.0.0');
+define('CITAS_HUMOR_VERSION', '2.1.0');
 define('CITAS_HUMOR_PATH', plugin_dir_path(__FILE__));
 define('CITAS_HUMOR_URL', plugin_dir_url(__FILE__));
 
