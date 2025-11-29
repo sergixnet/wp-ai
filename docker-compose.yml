@@ -31,8 +31,13 @@ services:
       WORDPRESS_CONFIG_EXTRA: |
         define('FORCE_SSL_ADMIN', true);
         if ($$_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') $$_SERVER['HTTPS']='on';
+        define('WP_DEBUG', true);
+        define('WP_DEBUG_LOG', true);
+        define('WP_DEBUG_DISPLAY', false);
     volumes:
       - ./wordpress:/var/www/html
+      - ./wp-content/plugins:/var/www/html/wp-content/plugins
+      - ./wp-content/themes:/var/www/html/wp-content/themes
     networks:
       - wp-network
 
@@ -45,6 +50,8 @@ services:
       - '443:443'
     volumes:
       - ./wordpress:/var/www/html
+      - ./wp-content/plugins:/var/www/html/wp-content/plugins
+      - ./wp-content/themes:/var/www/html/wp-content/themes
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./nginx/ssl:/etc/nginx/ssl
     depends_on:
@@ -66,6 +73,8 @@ services:
       WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - ./wordpress:/var/www/html
+      - ./wp-content/plugins:/var/www/html/wp-content/plugins
+      - ./wp-content/themes:/var/www/html/wp-content/themes
     networks:
       - wp-network
     command: tail -f /dev/null

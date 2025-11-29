@@ -1,3 +1,39 @@
+# Variables de entorno
 .env
+
+# Core de WordPress (no versionar)
 wordpress/
+
+# Certificados SSL
 nginx/ssl/*.pem
+
+# Node modules (si usas npm para temas)
+node_modules/
+wp-content/themes/*/node_modules/
+wp-content/plugins/*/node_modules/
+
+# Archivos de construcción
+*.map
+wp-content/themes/*/dist/
+wp-content/plugins/*/dist/
+
+# Logs
+*.log
+wp-content/debug.log
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Backups
+*.sql
+*.sql.gz
+backup/
+backups/
