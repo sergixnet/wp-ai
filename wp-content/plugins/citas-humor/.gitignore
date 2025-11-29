@@ -1,0 +1,13 @@
+# Node modules
+node_modules/
+
+# Archivos compilados
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Sistema operativo
+.DS_Store
+Thumbs.db

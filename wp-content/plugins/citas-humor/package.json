@@ -1,0 +1,12 @@
+{
+  "name": "citas-humor-block",
+  "version": "1.0.0",
+  "description": "Bloque de Gutenberg para Citas de Humor",
+  "scripts": {
+    "build": "wp-scripts build",
+    "start": "wp-scripts start"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "^27.0.0"
+  }
+}

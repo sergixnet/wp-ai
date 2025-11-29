@@ -25,11 +25,13 @@ define('CITAS_HUMOR_URL', plugin_dir_url(__FILE__));
 require_once CITAS_HUMOR_PATH . 'includes/class-citas-data.php';
 require_once CITAS_HUMOR_PATH . 'includes/class-citas-styles.php';
 require_once CITAS_HUMOR_PATH . 'includes/class-citas-shortcode.php';
+require_once CITAS_HUMOR_PATH . 'includes/class-citas-block.php';
 require_once CITAS_HUMOR_PATH . 'admin/class-citas-admin.php';
 
 // Inicializar el plugin
 function citas_humor_init() {
     new Citas_Humor_Shortcode();
+    new Citas_Humor_Block();
     
     if (is_admin()) {
         new Citas_Humor_Admin();
