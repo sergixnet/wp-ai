@@ -1,0 +1,34 @@
+/* Admin Styles for Restaurant Reservations */
+
+.status-pending {
+  color: #f0ad4e;
+  font-weight: 600;
+}
+
+.status-confirmed {
+  color: #5cb85c;
+  font-weight: 600;
+}
+
+.status-cancelled {
+  color: #d9534f;
+  font-weight: 600;
+}
+
+.status-completed {
+  color: #5bc0de;
+  font-weight: 600;
+}
+
+.status-no-show {
+  color: #999;
+  font-weight: 600;
+}
+
+.wp-list-table .button-link-delete {
+  color: #a00;
+}
+
+.wp-list-table .button-link-delete:hover {
+  color: #dc3232;
+}
