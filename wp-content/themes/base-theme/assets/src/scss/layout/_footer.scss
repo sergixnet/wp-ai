@@ -1,0 +1,94 @@
+// ==========================================================================
+// Footer
+// ==========================================================================
+
+.site-footer {
+  background-color: $color-bg-dark;
+  color: $color-text-inverse;
+  padding: $spacing-2xl 0 $spacing-lg;
+  margin-top: $spacing-5xl;
+}
+
+.footer-container {
+  @include container;
+}
+
+.site-info {
+  text-align: center;
+  padding: $spacing-lg 0;
+  border-top: $border-width solid rgba($color-white, 0.1);
+  font-size: $font-size-sm;
+  color: rgba($color-white, 0.7);
+
+  a {
+    color: $color-text-inverse;
+    text-decoration: none;
+
+    &:hover {
+      color: $color-primary;
+    }
+  }
+}
+
+// Footer widgets
+.footer-widgets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: $spacing-2xl;
+  margin-bottom: $spacing-xl;
+
+  .widget {
+    .widget-title {
+      font-size: $font-size-lg;
+      margin-bottom: $spacing-md;
+      color: $color-white;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      li {
+        margin-bottom: $spacing-sm;
+
+        a {
+          color: rgba($color-white, 0.8);
+          text-decoration: none;
+          transition: $transition-fade;
+
+          &:hover {
+            color: $color-primary;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Footer navigation
+.footer-navigation {
+  .menu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: $spacing-md;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 $spacing-lg;
+
+    li {
+      margin: 0;
+
+      a {
+        color: rgba($color-white, 0.8);
+        text-decoration: none;
+        transition: $transition-fade;
+
+        &:hover {
+          color: $color-primary;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,56 @@
+// ==========================================================================
+// Functions - Color Manipulation
+// ==========================================================================
+
+/// Remove the unit from a value
+/// @param {Number} $value - Value to remove unit from
+/// @return {Number} - Unitless value
+@function strip-unit($value) {
+  @return $value / ($value * 0 + 1);
+}
+
+/// Convert pixels to rem
+/// @param {Number} $pixels - Value in pixels
+/// @param {Number} $base - Base font size in pixels (default: 16)
+/// @return {Number} - Value in rem
+@function rem($pixels, $base: 16) {
+  @return #{strip-unit($pixels) / strip-unit($base)}rem;
+}
+
+/// Convert pixels to em
+/// @param {Number} $pixels - Value in pixels
+/// @param {Number} $base - Base font size in pixels (default: 16)
+/// @return {Number} - Value in em
+@function em($pixels, $base: 16) {
+  @return #{strip-unit($pixels) / strip-unit($base)}em;
+}
+
+/// Calculate percentage
+/// @param {Number} $target - Target value
+/// @param {Number} $context - Context value
+/// @return {Number} - Percentage value
+@function percentage-calc($target, $context) {
+  @return percentage($target / $context);
+}
+
+/// Get z-index from map
+/// @param {String} $key - Z-index key
+/// @return {Number} - Z-index value
+@function z($key) {
+  $z-indexes: (
+    'dropdown': $z-index-dropdown,
+    'sticky': $z-index-sticky,
+    'fixed': $z-index-fixed,
+    'modal-backdrop': $z-index-modal-backdrop,
+    'modal': $z-index-modal,
+    'popover': $z-index-popover,
+    'tooltip': $z-index-tooltip
+  );
+
+  @if map-has-key($z-indexes, $key) {
+    @return map-get($z-indexes, $key);
+  }
+
+  @warn "Unknown z-index key: #{$key}";
+  @return null;
+}

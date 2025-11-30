@@ -1,0 +1,51 @@
+// ==========================================================================
+// Header
+// ==========================================================================
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: z('sticky');
+  background-color: $color-white;
+  border-bottom: $border-width solid $color-border;
+  box-shadow: $shadow-sm;
+}
+
+.header-container {
+  @include container;
+  @include flex-between;
+  padding-top: $spacing-md;
+  padding-bottom: $spacing-md;
+}
+
+// Site branding
+.site-branding {
+  display: flex;
+  align-items: center;
+
+  .custom-logo {
+    max-height: 50px;
+    width: auto;
+  }
+
+  .site-title {
+    margin: 0;
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+
+    a {
+      color: $color-text-primary;
+      text-decoration: none;
+
+      &:hover {
+        color: $color-primary;
+      }
+    }
+  }
+
+  .site-description {
+    margin: 0;
+    font-size: $font-size-sm;
+    color: $color-text-secondary;
+  }
+}

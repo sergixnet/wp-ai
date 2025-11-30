@@ -1,0 +1,43 @@
+{
+  "name": "base-theme",
+  "version": "1.0.0",
+  "description": "Modern WordPress starter theme with SCSS and ES6+",
+  "author": "Your Name",
+  "license": "GPL-2.0-or-later",
+  "keywords": [
+    "wordpress",
+    "theme",
+    "starter",
+    "scss",
+    "es6"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "watch": "vite build --watch",
+    "preview": "vite preview",
+    "lint:js": "eslint assets/src/js/**/*.js",
+    "lint:css": "stylelint assets/src/scss/**/*.scss",
+    "lint": "npm run lint:js && npm run lint:css",
+    "format": "prettier --write assets/src/**/*.{js,scss}"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.23.0",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.52.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.29.0",
+    "prettier": "^3.0.3",
+    "sass": "^1.69.5",
+    "stylelint": "^15.11.0",
+    "stylelint-config-standard-scss": "^11.1.0",
+    "stylelint-order": "^6.0.3",
+    "terser": "^5.44.1",
+    "vite": "^5.0.0"
+  },
+  "browserslist": [
+    "defaults",
+    "not IE 11"
+  ]
+}

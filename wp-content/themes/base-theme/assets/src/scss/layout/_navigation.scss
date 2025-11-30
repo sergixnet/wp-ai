@@ -1,0 +1,212 @@
+// ==========================================================================
+// Navigation
+// ==========================================================================
+
+.main-navigation {
+  position: relative;
+
+  .menu {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: $spacing-md;
+
+    @include media-down('md') {
+      display: none;
+      flex-direction: column;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background-color: $color-white;
+      border: $border-width solid $color-border;
+      border-radius: $border-radius;
+      box-shadow: $shadow-lg;
+      padding: $spacing-md;
+      min-width: 250px;
+      z-index: z('dropdown');
+
+      &.toggled {
+        display: flex;
+      }
+    }
+
+    li {
+      position: relative;
+      margin: 0;
+
+      a {
+        display: block;
+        padding: $spacing-sm $spacing-md;
+        color: $color-text-primary;
+        text-decoration: none;
+        font-weight: $font-weight-medium;
+        transition: $transition-fade;
+
+        &:hover,
+        &:focus {
+          color: $color-primary;
+          background-color: $color-bg-alt;
+          border-radius: $border-radius-sm;
+        }
+      }
+
+      &.current-menu-item > a,
+      &.current_page_item > a {
+        color: $color-primary;
+      }
+    }
+  }
+
+  // Submenu
+  .sub-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: $color-white;
+    border: $border-width solid $color-border;
+    border-radius: $border-radius;
+    box-shadow: $shadow-lg;
+    min-width: 200px;
+    padding: $spacing-sm 0;
+    z-index: z('dropdown');
+
+    @include media-down('md') {
+      position: static;
+      border: none;
+      box-shadow: none;
+      padding-left: $spacing-md;
+    }
+
+    li {
+      a {
+        padding: $spacing-xs $spacing-md;
+        white-space: nowrap;
+
+        &:hover {
+          background-color: $color-bg-alt;
+        }
+      }
+    }
+  }
+
+  li:hover > .sub-menu,
+  li:focus-within > .sub-menu {
+    display: block;
+  }
+}
+
+// Menu toggle button (mobile)
+.menu-toggle {
+  display: none;
+  background: none;
+  border: $border-width solid $color-border;
+  border-radius: $border-radius-sm;
+  padding: $spacing-sm $spacing-md;
+  cursor: pointer;
+  transition: $transition-base;
+
+  @include media-down('md') {
+    display: block;
+  }
+
+  &:hover {
+    background-color: $color-bg-alt;
+  }
+
+  &:focus {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+  }
+
+  span {
+    display: block;
+    width: 24px;
+    height: 2px;
+    background-color: $color-text-primary;
+    margin: 5px 0;
+    transition: $transition-base;
+  }
+
+  &.toggled {
+    span:nth-child(1) {
+      transform: rotate(45deg) translate(7px, 7px);
+    }
+
+    span:nth-child(2) {
+      opacity: 0;
+    }
+
+    span:nth-child(3) {
+      transform: rotate(-45deg) translate(7px, -7px);
+    }
+  }
+}
+
+// Pagination
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: $spacing-xs;
+  list-style: none;
+  padding: 0;
+  margin: $spacing-2xl 0;
+
+  .page-numbers {
+    display: inline-block;
+    padding: $spacing-sm $spacing-md;
+    border: $border-width solid $color-border;
+    border-radius: $border-radius-sm;
+    color: $color-text-primary;
+    text-decoration: none;
+    transition: $transition-base;
+
+    &:hover {
+      background-color: $color-bg-alt;
+      border-color: $color-primary;
+      color: $color-primary;
+    }
+
+    &.current {
+      background-color: $color-primary;
+      border-color: $color-primary;
+      color: $color-white;
+    }
+
+    &.dots {
+      border: none;
+      cursor: default;
+
+      &:hover {
+        background-color: transparent;
+        color: $color-text-primary;
+      }
+    }
+  }
+}
+
+// Breadcrumbs
+.breadcrumbs {
+  padding: $spacing-md 0;
+  font-size: $font-size-sm;
+  color: $color-text-secondary;
+
+  a {
+    color: $color-text-secondary;
+    text-decoration: none;
+
+    &:hover {
+      color: $color-primary;
+      text-decoration: underline;
+    }
+  }
+
+  .separator {
+    margin: 0 $spacing-xs;
+  }
+
+  .current {
+    color: $color-text-primary;
+  }
+}

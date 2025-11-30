@@ -1,0 +1,274 @@
+// ==========================================================================
+// Mixins - Media Queries
+// ==========================================================================
+
+@mixin media-up($breakpoint) {
+  @if map-has-key($breakpoints, $breakpoint) {
+    $breakpoint-value: map-get($breakpoints, $breakpoint);
+    @media (min-width: $breakpoint-value) {
+      @content;
+    }
+  } @else {
+    @warn "Invalid breakpoint: #{$breakpoint}.";
+  }
+}
+
+@mixin media-down($breakpoint) {
+  @if map-has-key($breakpoints, $breakpoint) {
+    $breakpoint-value: map-get($breakpoints, $breakpoint);
+    @media (max-width: ($breakpoint-value - 1px)) {
+      @content;
+    }
+  } @else {
+    @warn "Invalid breakpoint: #{$breakpoint}.";
+  }
+}
+
+@mixin media-between($lower, $upper) {
+  @if map-has-key($breakpoints, $lower) and map-has-key($breakpoints, $upper) {
+    $lower-breakpoint: map-get($breakpoints, $lower);
+    $upper-breakpoint: map-get($breakpoints, $upper);
+    @media (min-width: $lower-breakpoint) and (max-width: ($upper-breakpoint - 1px)) {
+      @content;
+    }
+  } @else {
+    @warn "Invalid breakpoints: #{$lower} or #{$upper}.";
+  }
+}
+
+// ==========================================================================
+// Mixins - Typography
+// ==========================================================================
+
+@mixin font-size($size, $line-height: null) {
+  font-size: $size;
+  @if $line-height {
+    line-height: $line-height;
+  }
+}
+
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin line-clamp($lines: 2) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// ==========================================================================
+// Mixins - Layout
+// ==========================================================================
+
+@mixin container {
+  max-width: $container-max-width;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: $container-padding;
+  padding-right: $container-padding;
+}
+
+@mixin clearfix {
+  &::after {
+    content: '';
+    display: table;
+    clear: both;
+  }
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// ==========================================================================
+// Mixins - Visual Effects
+// ==========================================================================
+
+@mixin transition($properties: all, $duration: $transition-speed-base, $timing: $transition-timing) {
+  transition: $properties $duration $timing;
+}
+
+@mixin hover-lift {
+  transition: transform $transition-speed-base $transition-timing;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+@mixin shadow($level: 'md') {
+  @if $level == 'sm' {
+    box-shadow: $shadow-sm;
+  } @else if $level == 'md' {
+    box-shadow: $shadow-md;
+  } @else if $level == 'lg' {
+    box-shadow: $shadow-lg;
+  } @else if $level == 'xl' {
+    box-shadow: $shadow-xl;
+  } @else if $level == '2xl' {
+    box-shadow: $shadow-2xl;
+  } @else {
+    box-shadow: $shadow;
+  }
+}
+
+// ==========================================================================
+// Mixins - Buttons
+// ==========================================================================
+
+@mixin button-base {
+  display: inline-block;
+  font-family: $font-primary;
+  font-weight: $font-weight-medium;
+  text-align: center;
+  text-decoration: none;
+  vertical-align: middle;
+  cursor: pointer;
+  user-select: none;
+  border: $border-width solid transparent;
+  padding: $spacing-sm $spacing-md;
+  font-size: $font-size-base;
+  line-height: $line-height-base;
+  border-radius: $border-radius;
+  transition: $transition-base;
+
+  &:focus {
+    outline: 2px solid $color-primary;
+    outline-offset: 2px;
+  }
+
+  &:disabled,
+  &.disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+}
+
+@mixin button-variant($bg, $color: $color-white, $hover-bg: darken($bg, 10%)) {
+  background-color: $bg;
+  color: $color;
+  border-color: $bg;
+
+  &:hover {
+    background-color: $hover-bg;
+    border-color: $hover-bg;
+    color: $color;
+  }
+
+  &:focus {
+    background-color: $hover-bg;
+    border-color: $hover-bg;
+  }
+}
+
+@mixin button-outline-variant($color) {
+  background-color: transparent;
+  color: $color;
+  border-color: $color;
+
+  &:hover {
+    background-color: $color;
+    color: $color-white;
+  }
+}
+
+// ==========================================================================
+// Mixins - Forms
+// ==========================================================================
+
+@mixin form-control {
+  display: block;
+  width: 100%;
+  padding: $spacing-sm $spacing-md;
+  font-size: $font-size-base;
+  font-weight: $font-weight-normal;
+  line-height: $line-height-base;
+  color: $color-text-primary;
+  background-color: $color-white;
+  background-clip: padding-box;
+  border: $border-width solid $color-border;
+  border-radius: $border-radius;
+  transition: border-color $transition-speed-base $transition-timing;
+
+  &:focus {
+    color: $color-text-primary;
+    background-color: $color-white;
+    border-color: $color-primary;
+    outline: 0;
+    box-shadow: 0 0 0 3px rgba($color-primary, 0.25);
+  }
+
+  &::placeholder {
+    color: $color-text-muted;
+    opacity: 1;
+  }
+
+  &:disabled,
+  &[readonly] {
+    background-color: $color-gray-100;
+    opacity: 1;
+  }
+}
+
+// ==========================================================================
+// Mixins - Accessibility
+// ==========================================================================
+
+@mixin sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+@mixin sr-only-focusable {
+  &:active,
+  &:focus {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+}
+
+// ==========================================================================
+// Mixins - Aspect Ratio
+// ==========================================================================
+
+@mixin aspect-ratio($width: 16, $height: 9) {
+  position: relative;
+  
+  &::before {
+    content: '';
+    display: block;
+    padding-top: percentage($height / $width);
+  }
+
+  > * {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
