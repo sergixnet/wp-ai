@@ -104,12 +104,20 @@ class RR_Reservations_Admin {
                                 <td><?php echo esc_html($r->party_size); ?></td>
                                 <td><span class="status-<?php echo esc_attr($r->status); ?>"><?php echo esc_html($statuses[$r->status] ?? $r->status); ?></span></td>
                                 <td>
-                                    <?php if ($r->status === 'pending'): ?>
-                                        <a href="<?php echo wp_nonce_url(admin_url('admin-post.php?action=rr_update_reservation_status&id=' . $r->id . '&status=confirmed'), 'update_status_' . $r->id); ?>" class="button button-small">Confirmar</a>
-                                    <?php endif; ?>
-                                    <?php if ($r->status !== 'cancelled'): ?>
-                                        <a href="<?php echo wp_nonce_url(admin_url('admin-post.php?action=rr_update_reservation_status&id=' . $r->id . '&status=cancelled'), 'update_status_' . $r->id); ?>" class="button button-small">Cancelar</a>
-                                    <?php endif; ?>
+                                    <div style="display: flex; flex-direction: column; gap: 5px; min-width: 140px;">
+                                        <?php if ($r->status === 'pending'): ?>
+                                            <a href="<?php echo wp_nonce_url(admin_url('admin-post.php?action=rr_update_reservation_status&id=' . $r->id . '&status=confirmed'), 'update_status_' . $r->id); ?>" class="button button-small button-primary" style="margin: 0; text-align: center;">Confirmar</a>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($r->status === 'confirmed'): ?>
+                                            <a href="<?php echo wp_nonce_url(admin_url('admin-post.php?action=rr_update_reservation_status&id=' . $r->id . '&status=completed'), 'update_status_' . $r->id); ?>" class="button button-small" style="margin: 0; background: #46b450; color: white; border-color: #46b450; text-align: center;">Completar</a>
+                                            <a href="<?php echo wp_nonce_url(admin_url('admin-post.php?action=rr_update_reservation_status&id=' . $r->id . '&status=no-show'), 'update_status_' . $r->id); ?>" class="button button-small" style="margin: 0; background: #dc3232; color: white; border-color: #dc3232; text-align: center;">No se presentó</a>
+                                        <?php endif; ?>
+                                        
+                                        <?php if ($r->status !== 'cancelled' && $r->status !== 'completed' && $r->status !== 'no-show'): ?>
+                                            <a href="<?php echo wp_nonce_url(admin_url('admin-post.php?action=rr_update_reservation_status&id=' . $r->id . '&status=cancelled'), 'update_status_' . $r->id); ?>" class="button button-small" style="margin: 0; text-align: center;">Cancelar</a>
+                                        <?php endif; ?>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

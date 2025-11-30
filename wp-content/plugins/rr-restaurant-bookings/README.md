@@ -2,7 +2,7 @@
 
 **Sistema completo de gestión de reservas para restaurantes con calendario, gestión de mesas y notificaciones por email.**
 
-Versión 1.0.1 | Por Development Team
+Versión 1.0.2 | Por Development Team
 
 ---
 
@@ -107,10 +107,17 @@ Versión 1.0.1 | Por Development Team
 ### Ver Reservas
 
 1. Ir a **Reservas → Reservas**
-2. Filtrar por estado (Pendiente/Confirmada/Cancelada)
-3. Acciones disponibles:
-   - **Confirmar**: Cambia estado a confirmada y envía email
-   - **Cancelar**: Cancela la reserva y notifica al cliente
+2. Filtrar por estado (Pendiente/Confirmada/Cancelada/Completada/No se presentó)
+3. Navegar usando el filtro de fecha desde el calendario
+4. Acciones disponibles según el estado:
+   - **Pendiente**:
+     - Botón "Confirmar" (azul) - Cambia a confirmada y envía email
+     - Botón "Cancelar" - Cancela la reserva
+   - **Confirmada**:
+     - Botón "Completar" (verde) - Marca como completada cuando el cliente acude
+     - Botón "No se presentó" (rojo) - Marca cuando el cliente no aparece
+     - Botón "Cancelar" - Cancela la reserva
+   - **Completada/No se presentó/Cancelada**: Sin acciones (estados finales)
 
 ### Calendario
 
@@ -476,7 +483,7 @@ add_action('plugins_loaded', 'rr_init_plugin');
 **Responsabilidad**: Interfaz de administración para mesas.
 
 ```php
-class RR_Tables_Admin {
+class RR_Reservations_Admin {
 
     public function __construct() {
         // Añade menú "Reservas" en WordPress
@@ -484,6 +491,7 @@ class RR_Tables_Admin {
 
         // Handlers para guardar/editar/eliminar
         add_action('admin_post_rr_add_table', array($this, 'handle_add_table'));
+        add_action('admin_post_rr_update_reservation_status', array($this, 'handle_update_status'));
     }
 
     public function render_main_page() {
@@ -494,17 +502,25 @@ class RR_Tables_Admin {
         // - Próximas reservas (tabla)
     }
 
-    public function render_tables_page() {
-        // 📋 Lista todas las mesas en tabla HTML
-        // Columnas: ID | Nombre | Capacidad | Estado | Acciones
-        // Botones: Editar | Eliminar
+    public function render_reservations_page() {
+        // 📋 Lista todas las reservas con:
+        // - Filtros por estado (pending, confirmed, cancelled, completed, no-show)
+        // - Filtro por fecha desde parámetro GET
+        // - Botones de acción según estado:
+        //   * Pendiente: Confirmar, Cancelar
+        //   * Confirmada: Completar, No se presentó, Cancelar
+        //   * Estados finales: Sin acciones
+        // - Diseño responsive con botones apilados verticalmente
     }
 
-    public function handle_add_table() {
+    public function handle_update_status() {
         // 1. Verifica permisos (current_user_can)
         // 2. Verifica nonce (wp_verify_nonce)
-        // 3. Sanitiza datos (sanitize_text_field)
-        // 4. Llama a RR_Tables_Data::create_table()
+        // 3. Actualiza estado en base de datos
+        // 4. Envía email según el nuevo estado:
+        //    - confirmed: Email de confirmación
+        //    - cancelled: Email de cancelación
+        //    - completed/no-show: Sin email (estados internos)
         // 5. Redirige con mensaje de éxito
     }
 }
@@ -587,10 +603,15 @@ class RR_Reservations_Data {
      * Verifica si hay mesas disponibles
      */
     public function check_availability($date, $time, $party_size) {
-        // 1. Obtiene mesas con capacidad suficiente
+        // 1. Verifica si la fecha está cerrada
+        if (RR_Calendar::is_closed_date($date)) {
+            return false;
+        }
+
+        // 2. Obtiene mesas con capacidad suficiente
         $tables = RR_Tables_Data::get_tables_by_capacity($party_size);
 
-        // 2. Para cada mesa, verifica si está libre
+        // 3. Para cada mesa, verifica si está libre
         foreach ($tables as $table) {
             $conflicts = $this->get_conflicting_reservations(
                 $table->id,
@@ -1102,17 +1123,28 @@ services:
 
 ### Debugging
 
-```php
-// Activar debugging en wp-config.php
-define('WP_DEBUG', true);
-define('WP_DEBUG_LOG', true);
-define('WP_DEBUG_DISPLAY', false);
+El plugin está configurado para logging en desarrollo:
 
-// Logs en class-reservations-data.php
+```bash
+# Ver logs en tiempo real
+docker exec wp-ai-wordpress tail -f /var/www/html/wp-content/debug.log
+
+# Configuración actual (docker-compose.yml)
+WORDPRESS_CONFIG_EXTRA: |
+  define('WP_DEBUG', true);
+  define('WP_DEBUG_LOG', true);
+  define('WP_DEBUG_DISPLAY', false);
+```
+
+**Nota importante**: La constante `WP_DEBUG` en `wp-config.php` (línea 116) está comentada para evitar conflictos con la configuración de Docker Compose.
+
+```php
+// En class-reservations-data.php
 error_log('RR Bookings: Reserva creada con ID ' . $reservation_id);
 
-// Ver logs
-tail -f wp-content/debug.log
+// Verificar permisos del archivo de log
+docker exec wp-ai-wordpress ls -la /var/www/html/wp-content/debug.log
+# Debe ser: -rw-r--r-- 1 www-data www-data
 ```
 
 ### Testing Manual
@@ -1284,6 +1316,47 @@ No hay integración nativa con WooCommerce, pero podría desarrollarse un addon 
 ---
 
 ## 📝 Changelog
+
+### Versión 1.0.2 (30 Nov 2025)
+
+- 🐛 **Fix**: Corregido error TypeError en `is_closed_date()` cuando `rr_closed_days` está vacío
+  - Añadida validación `is_array()` antes de usar `in_array()`
+  - Mejora la robustez ante opciones no configuradas
+- 🐛 **Fix**: Resuelto conflicto de constante `WP_DEBUG` duplicada
+  - Comentada definición en `wp-config.php` línea 116
+  - Configuración ahora gestionada por `WORDPRESS_CONFIG_EXTRA` en `docker-compose.yml`
+- ✨ **Feature**: Añadidos botones de gestión de estado en lista de reservas
+  - Estados "Completada" y "No se presentó" ahora accesibles desde el panel
+  - Botones organizados verticalmente con mejor espaciado (flexbox con gap)
+  - Codificación por colores: Confirmar (azul), Completar (verde), No se presentó (rojo)
+- 🎨 **UI**: Mejorada interfaz de acciones en gestión de reservas
+  - Botones apilados verticalmente con `display: flex; flex-direction: column`
+  - Ancho mínimo de 140px para consistencia visual
+  - Margen eliminado entre botones y añadido gap de 5px
+- 📊 **Admin**: Filtros de estado ahora incluyen todos los estados posibles
+  - Añadido filtro "Completada" en submenú
+  - Añadido filtro "No se presentó" en submenú
+  - Preservación de filtros de fecha al cambiar de estado
+- 📚 **Docs**: Actualizado README con nuevos flujos de gestión de estados
+  - Documentado el flujo completo de estados de reserva
+  - Añadidas instrucciones para marcar reservas como completadas/no-show
+  - Actualizado diagrama de estados con nuevas transiciones
+
+### Versión 1.0.1 (30 Nov 2025)
+
+- 🐛 **Fix**: Corregido botón "Ver detalles" en calendario que no llevaba a ningún sitio
+  - Cambiado `href="#"` por enlace a página de reservas con parámetro `&date=`
+- ✨ **Feature**: Añadido filtro por fecha en lista de reservas
+  - Parámetro GET `?date=YYYY-MM-DD` filtra reservas de ese día
+  - Banner informativo muestra la fecha filtrada con opción de quitar filtro
+  - Integración con calendario: clic en "Ver detalles" aplica filtro automático
+- 🎨 **UI**: Renombrado menú principal de "Reservas" a "Dashboard"
+  - Primer elemento del menú ahora tiene título más descriptivo
+  - Mejora la navegación y claridad del panel de administración
+- 📚 **Docs**: Diagramas ASCII reemplazados por Mermaid
+  - 8 diagramas convertidos: arquitectura, ER, estados, flujos, algoritmos
+  - Mejor visualización en GitHub/GitLab
+  - Diagramas interactivos y profesionales
 
 ### Versión 1.0.0 (30 Nov 2025)
 
